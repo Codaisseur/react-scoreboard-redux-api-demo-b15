@@ -2,27 +2,30 @@
 
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 import Title from '../components/Title'
 import Player, { playerShape } from '../components/Player'
+import { fetchPlayers } from '../actions/players'
 import './Board.css'
 
-export default class Board extends PureComponent {
+export class Board extends PureComponent {
   static propTypes = {
     players: PropTypes.arrayOf(playerShape).isRequired,
-    updatePlayer: PropTypes.func.isRequired
+    fetchPlayers: PropTypes.func.isRequired
+  }
+
+  componentWillMount() {
+    this.props.fetchPlayers()
   }
 
   renderPlayers() {
-    const { players, updatePlayer } = this.props
+    const { players } = this.props
 
     return players
       .concat()
       .sort((p1, p2) => (p2.score - p1.score))
       .map((player, index) => (
-        <Player
-          onChange={updatePlayer}
-          key={index} { ...player }
-        />
+        <Player key={index} { ...player } />
       ))
   }
 
@@ -37,3 +40,7 @@ export default class Board extends PureComponent {
     )
   }
 }
+
+const mapStateToProps = ({ players }) => ({ players })
+
+export default connect(mapStateToProps, { fetchPlayers })(Board)
